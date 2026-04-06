@@ -672,6 +672,8 @@ Use routines to schedule recurring work. Each routine auto-creates an issue on t
 | POST   | `/api/routines/:id/triggers`                   | Add a trigger (schedule, webhook, or api) |
 | PATCH  | `/api/routine-triggers/:id`                    | Update a trigger                     |
 | DELETE | `/api/routine-triggers/:id`                    | Delete a trigger                     |
+| POST   | `/api/routine-triggers/:id/rotate-secret`      | Rotate webhook signing secret        |
+| POST   | `/api/routine-triggers/public/:publicId/fire`  | Fire webhook trigger from external system |
 
 **Create routine example:**
 
@@ -704,9 +706,9 @@ POST /api/routines/{routineId}/triggers
 
 **Fields:**
 
-- `concurrencyPolicy`: `coalesce_if_active` (skip if previous run still active) or `allow_parallel`
-- `catchUpPolicy`: `skip_missed` (don't fire missed ticks) or `catch_up`
-- `status`: `active` or `paused`
+- `concurrencyPolicy`: `coalesce_if_active` (skip/coalesce if previous run still active), `skip_if_active` (skip if any run is active), or `always_enqueue` (always create a new run)
+- `catchUpPolicy`: `skip_missed` (don't fire missed ticks) or `enqueue_missed_with_cap` (enqueue missed runs up to a cap)
+- `status`: `active`, `paused`, or `archived`
 - Trigger kinds: `schedule` (cron), `webhook` (external HTTP), `api` (manual/programmatic)
 
 **When to use routines vs heartbeat cron:**
